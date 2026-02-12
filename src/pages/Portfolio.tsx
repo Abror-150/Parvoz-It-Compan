@@ -10,7 +10,7 @@ const Portfolio = () => {
     { id: 'all', label: 'All Projects' },
     { id: 'web', label: 'Web' },
     { id: 'mobile', label: 'Mobile' },
-    { id: 'branding', label: 'Branding' },
+    { id: 'brandingg', label: 'Branding' },
   ];
 
   const projects = [
