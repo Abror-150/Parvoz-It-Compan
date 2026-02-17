@@ -1,52 +1,34 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ServiceCard } from '@/components/ServiceCard';
-import { 
-  Code, 
-  Smartphone, 
-  TrendingUp, 
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ServiceCard } from "@/components/ServiceCard";
+import {
+  Code,
+  Smartphone,
+  TrendingUp,
   Search,
   Palette,
-  ShoppingCart
-} from 'lucide-react';
+  ShoppingCart,
+} from "lucide-react";
+import { getServices } from "@/service/api";
+import { useQuery } from "@tanstack/react-query";
+const iconMap: Record<string, any> = {
+  Code: Code,
+  Smartphone: Smartphone,
+  TrendingUp: TrendingUp,
+  Search: Search,
+  Palette: Palette,
+  ShoppingCart: ShoppingCart,
+};
 
 const Home = () => {
   const { t } = useTranslation();
 
-  const services = [
-    {
-      icon: Code,
-      title: 'Website Development',
-      description: 'Custom websites built with modern technologies',
-    },
-    {
-      icon: Smartphone,
-      title: 'Mobile Apps',
-      description: 'Native and cross-platform mobile applications',
-    },
-    {
-      icon: Palette,
-      title: 'Brand Identity',
-      description: 'Complete branding and visual identity solutions',
-    },
-    {
-      icon: Search,
-      title: 'SEO Optimization',
-      description: 'Improve your search engine rankings',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Digital Marketing',
-      description: 'Comprehensive social media and ads management',
-    },
-    {
-      icon: ShoppingCart,
-      title: 'E-commerce',
-      description: 'Online stores and marketplace integrations',
-    },
-  ];
+  const { data: services = [], isLoading } = useQuery({
+    queryKey: ["services"],
+    queryFn: getServices,
+  });
 
   return (
     <div className="min-h-screen">
@@ -55,9 +37,12 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-hero" />
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+          <div
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"
+            style={{ animationDelay: "3s" }}
+          />
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-10 pt-20">
           <div className="text-center max-w-4xl mx-auto">
             <motion.div
@@ -71,20 +56,18 @@ const Home = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                {t('hero.subtitle')}
+                {t("hero.subtitle")}
               </motion.h2>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
-                <span className="text-gradient-primary">
-                  {t('hero.title')}
-                </span>
+                <span className="text-gradient-primary">{t("hero.title")}</span>
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-                {t('hero.description')}
+                {t("hero.description")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/services">
                   <Button size="lg" className="group">
-                    {t('hero.cta')}
+                    {t("hero.cta")}
                     <motion.span
                       className="ml-2"
                       animate={{ x: [0, 5, 0] }}
@@ -96,7 +79,7 @@ const Home = () => {
                 </Link>
                 <Link to="/contact">
                   <Button size="lg" variant="outline">
-                    {t('hero.contact')}
+                    {t("hero.contact")}
                   </Button>
                 </Link>
               </div>
@@ -115,24 +98,28 @@ const Home = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              {t('services.title')}
+              {t("services.title")}
             </h2>
             <p className="text-xl text-muted-foreground">
-              {t('services.subtitle')}
+              {t("services.subtitle")}
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <ServiceCard
-                key={index}
-                icon={service.icon}
-                title={service.title}
-                description={service.description}
-                index={index}
-              />
-            ))}
-          </div>
+  {services.map((service: any, index: number) => {
+    const Icon = iconMap[service.icon] || Code; // icon componentga o‘tkazish
+    return (
+      <ServiceCard
+        key={index}
+        icon={Icon} // shuni Icon qilib berish kerak
+        title={service.title}
+        description={service.description}
+        index={index}
+      />
+    );
+  })}
+</div>
+
 
           <motion.div
             initial={{ opacity: 0 }}

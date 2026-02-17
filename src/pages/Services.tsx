@@ -1,6 +1,7 @@
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { ServiceCard } from '@/components/ServiceCard';
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { ServiceCard } from "@/components/ServiceCard";
+import { useQuery } from "@tanstack/react-query";
 import {
   Code,
   Smartphone,
@@ -12,63 +13,42 @@ import {
   HeadphonesIcon,
   Megaphone,
   Package,
-} from 'lucide-react';
+} from "lucide-react";
+
+// 🔹 icon map: API-dan keladigan service.icon stringi bo'yicha
+const iconMap: Record<string, any> = {
+  code: Code,
+  mobile: Smartphone,
+  marketing: TrendingUp,
+  seo: Search,
+  design: Palette,
+  ecommerce: ShoppingCart,
+  globe: Globe,
+  headphones: HeadphonesIcon,
+  megaphone: Megaphone,
+  package: Package,
+};
+interface Service {
+  icon: string; // API-dan keladigan icon nomi
+  title: string;
+  description: string;
+}
 
 const Services = () => {
   const { t } = useTranslation();
 
-  const services = [
-    {
-      icon: ShoppingCart,
-      title: 'Online Store Development',
-      description: 'Full-featured e-commerce solutions with payment integration and inventory management',
+  const {
+    data: services = [],
+    isLoading,
+    isError,
+  } = useQuery<Service[], Error>({
+    queryKey: ["services"],
+    queryFn: async () => {
+      const res = await fetch("https://api.parvozcompany.uz/servicee");
+      if (!res.ok) throw new Error("Failed to fetch services");
+      return res.json();
     },
-    {
-      icon: Code,
-      title: 'Website Creation',
-      description: 'Custom, responsive websites built with modern frameworks and best practices',
-    },
-    {
-      icon: Palette,
-      title: 'Brand Identity',
-      description: 'Complete branding packages including logo, color schemes, and brand guidelines',
-    },
-    {
-      icon: Megaphone,
-      title: 'Google Ads',
-      description: 'Targeted advertising campaigns to reach your ideal customers',
-    },
-    {
-      icon: Search,
-      title: 'SEO Optimization',
-      description: 'Improve your search rankings and organic traffic with proven SEO strategies',
-    },
-    {
-      icon: Globe,
-      title: 'Logo Design',
-      description: 'Unique, memorable logos that capture your brand essence',
-    },
-    {
-      icon: TrendingUp,
-      title: 'SMM Marketing',
-      description: 'Social media strategy, content creation, and community management',
-    },
-    {
-      icon: HeadphonesIcon,
-      title: 'Technical Support',
-      description: '24/7 technical assistance and maintenance for your digital assets',
-    },
-    {
-      icon: Smartphone,
-      title: 'Mobile App Development',
-      description: 'Native and cross-platform mobile applications for iOS and Android',
-    },
-    {
-      icon: Package,
-      title: 'Marketplace Store Setup',
-      description: 'Professional setup and optimization for Amazon, Uzum, Ozon, and eBay',
-    },
-  ];
+  });
 
   return (
     <div className="min-h-screen pt-20">
@@ -82,10 +62,12 @@ const Services = () => {
             className="text-center max-w-3xl mx-auto"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              <span className="text-gradient-primary">{t('services.title')}</span>
+              <span className="text-gradient-primary">
+                {t("services.title")}
+              </span>
             </h1>
             <p className="text-xl text-muted-foreground">
-              {t('services.subtitle')}
+              {t("services.subtitle")}
             </p>
           </motion.div>
         </div>
@@ -94,17 +76,26 @@ const Services = () => {
       {/* Services Grid */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <ServiceCard
-                key={index}
-                icon={service.icon}
-                title={service.title}
-                description={service.description}
-                index={index}
-              />
-            ))}
-          </div>
+          {isLoading ? (
+            <p className="text-center text-muted-foreground">Loading...</p>
+          ) : isError ? (
+            <p className="text-center text-red-500">Failed to load services</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {services.map((service: any, index: number) => {
+                const Icon = iconMap[service.icon] || Code;
+                return (
+                  <ServiceCard
+                    key={index}
+                    icon={Icon}
+                    title={service.title}
+                    description={service.description}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -121,7 +112,8 @@ const Services = () => {
               Need a Custom Solution?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              We specialize in creating tailored solutions that fit your unique business needs
+              We specialize in creating tailored solutions that fit your unique
+              business needs
             </p>
             <a href="/contact">
               <motion.button

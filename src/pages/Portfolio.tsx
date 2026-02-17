@@ -1,69 +1,49 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { PortfolioCard } from '@/components/PortfolioCard';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { PortfolioCard } from "@/components/PortfolioCard";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+
+interface Project {
+  id: string;
+  title: string;
+  image: string;
+  type: "WEB" | "MOBILE" | "BRANDING";
+  url: string; // API dan keladigan project sayt linki
+  createdAt: string;
+}
+
+const categories = [
+  { id: "all", label: "All Projects" },
+  { id: "WEB", label: "Web" },
+  { id: "MOBILE", label: "Mobile" },
+  { id: "BRANDING", label: "Branding" },
+];
 
 const Portfolio = () => {
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<string>("all");
 
-  const categories = [
-    { id: 'all', label: 'All Projects' },
-    { id: 'web', label: 'Web' },
-    { id: 'mobile', label: 'Mobile' },
-    { id: 'brandingg', label: 'Branding' },
-  ];
+  // React Query bilan API chaqirish
+  const {
+    data: projects = [],
+    isLoading,
+    isError,
+  } = useQuery<Project[], Error>({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const res = await fetch("https://api.parvozcompany.uz/project");
+      if (!res.ok) throw new Error("Failed to fetch projects");
+      const data = await res.json();
+      console.log("API response:", data); // Bu qatorni qo'shing
+      return data;
+    },
+  });
 
-  const projects = [
-    {
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
-      title: 'E-commerce Platform',
-      category: 'web',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800',
-      title: 'Mobile Banking App',
-      category: 'mobile',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800',
-      title: 'Brand Identity Design',
-      category: 'branding',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800',
-      title: 'Corporate Website',
-      category: 'web',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800',
-      title: 'Fitness Tracker App',
-      category: 'mobile',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800',
-      title: 'Restaurant Branding',
-      category: 'branding',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800',
-      title: 'Real Estate Portal',
-      category: 'web',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800',
-      title: 'Food Delivery App',
-      category: 'mobile',
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1634942537034-2531766767d1?w=800',
-      title: 'Tech Startup Logo',
-      category: 'branding',
-    },
-  ];
-
-  const filteredProjects = filter === 'all' 
-    ? projects 
-    : projects.filter(project => project.category === filter);
+  // Filterlash
+  const filteredProjects =
+    filter === "all"
+      ? projects
+      : projects.filter((project) => project.type === filter);
 
   return (
     <div className="min-h-screen pt-20">
@@ -93,7 +73,7 @@ const Portfolio = () => {
             {categories.map((category) => (
               <Button
                 key={category.id}
-                variant={filter === category.id ? 'default' : 'outline'}
+                variant={filter === category.id ? "default" : "outline"}
                 onClick={() => setFilter(category.id)}
               >
                 {category.label}
@@ -106,20 +86,34 @@ const Portfolio = () => {
       {/* Portfolio Grid */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <motion.div
-            layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {filteredProjects.map((project, index) => (
-              <PortfolioCard
-                key={`${project.title}-${index}`}
-                image={project.image}
-                title={project.title}
-                category={project.category}
-                index={index}
-              />
-            ))}
-          </motion.div>
+          {isLoading ? (
+            <p className="text-center text-muted-foreground">
+              Loading projects...
+            </p>
+          ) : isError ? (
+            <p className="text-center text-red-500">Failed to load projects</p>
+          ) : (
+            <motion.div
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {filteredProjects.map((project, index) => (
+                <a
+                  key={project.id}
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <PortfolioCard
+                    image={project.image}
+                    title={project.title}
+                    category={project.type}
+                    index={index}
+                  />
+                </a>
+              ))}
+            </motion.div>
+          )}
         </div>
       </section>
 

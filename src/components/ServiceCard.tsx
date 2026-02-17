@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
-import { LucideIcon } from 'lucide-react';
-import { Card } from './ui/card';
-import { Button } from './ui/button';
-import { useTranslation } from 'react-i18next';
+import { motion } from "framer-motion";
+import { LucideIcon } from "lucide-react";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { useTranslation } from "react-i18next";
 
 interface ServiceCardProps {
   icon: LucideIcon;
@@ -11,7 +11,12 @@ interface ServiceCardProps {
   index: number;
 }
 
-export const ServiceCard = ({ icon: Icon, title, description, index }: ServiceCardProps) => {
+export const ServiceCard = ({
+  icon: Icon,
+  title,
+  description,
+  index,
+}: ServiceCardProps) => {
   const { t } = useTranslation();
 
   return (
@@ -36,8 +41,12 @@ export const ServiceCard = ({ icon: Icon, title, description, index }: ServiceCa
           </motion.div>
           <h3 className="text-xl font-semibold mb-2">{title}</h3>
           <p className="text-muted-foreground mb-4">{description}</p>
-          <Button variant="outline" size="sm" className="group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-            {t('services.orderButton')}
+          <Button
+            variant="outline"
+            size="sm"
+            className="group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+          >
+            {t("services.orderButton")}
           </Button>
         </div>
       </Card>
