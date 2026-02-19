@@ -9,6 +9,7 @@ interface ServiceCardProps {
   title: string;
   description: string;
   index: number;
+  onOrder: () => void;
 }
 
 export const ServiceCard = ({
@@ -16,6 +17,7 @@ export const ServiceCard = ({
   title,
   description,
   index,
+  onOrder,
 }: ServiceCardProps) => {
   const { t } = useTranslation();
 
@@ -39,11 +41,14 @@ export const ServiceCard = ({
           >
             <Icon className="w-6 h-6 text-primary" />
           </motion.div>
+
           <h3 className="text-xl font-semibold mb-2">{title}</h3>
           <p className="text-muted-foreground mb-4">{description}</p>
+
           <Button
             variant="outline"
             size="sm"
+            onClick={onOrder} 
             className="group-hover:bg-primary group-hover:text-primary-foreground transition-all"
           >
             {t("services.orderButton")}
