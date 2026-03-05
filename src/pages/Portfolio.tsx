@@ -116,30 +116,6 @@ const Portfolio = () => {
           )}
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Ready to Start Your Project?
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Let's create something amazing together
-            </p>
-            <a href="/contact">
-              <Button size="lg" className="glow-effect">
-                Get Started
-              </Button>
-            </a>
-          </motion.div>
-        </div>
-      </section>
     </div>
   );
 };
